@@ -1,0 +1,24 @@
+# Extra acceptance: same-level z-order, regrouping and Chinese text.
+init 640 320
+create rect background 0 0 640 320 #f2f5fa
+create text heading 30 45 "任务看板 / Build status"
+create g board
+create g card in board
+create rect panel 30 80 580 190 white in card
+set panel stroke #ccd4df
+create circle status 70 135 14 #22a06b in card
+create text label 100 141 "通过 / Ready" in card
+create line divider 55 170 585 170 #ccd4df in card
+create text note 55 210 "SVG CLI: Windows portable" in card
+create ellipse glow 70 135 23 23 #d8f4e7 in card
+back glow
+group badge label status glow
+move badge 12 0
+scale badge 1.05
+undo
+redo
+front badge
+ungroup badge
+front label
+save status-board.svg
+tree

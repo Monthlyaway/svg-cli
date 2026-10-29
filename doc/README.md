@@ -38,6 +38,7 @@ infrastructure --> domain
 - 2026-10-29：核对原始课程说明，确认六种内建类型、文档操作历史屏障、顶层组不可 ungroup，以及必须有 `final` tag。建立分层结构和渐进交付约定，避免一次性提交。
 - 第一轮实现：建立六种图形、封装的属性验证和递归组合模型。分组按文档遍历顺序收编，插入最早成员原位置；禁止祖先和子孙同时收编。当前 TypeScript 的 Node 类型需显式声明，已补齐配置。
 - 第二轮实现：完整命令、UTF-8 脚本、XML 适配和磁盘存储。通过构造分组缩放溢出的失败场景，检验部分修改会整体回滚；通过失败 read/save 检验历史不被清空。XML 导入先扫描显式 ID，自动 ID 跳过后续已命名元素。磁盘保存使用同目录临时文件再重命名。
+- 第三轮验收：补充任务看板与平面图两个独立场景，并用真实 CLI 生成四份 SVG。浏览器预览发现看板的状态圆点被面板遮挡；原因是 back 后分组收编将整组留在背景之前，修正为解组前 front badge。验收不仅比对输出，还独立检查位置、归属和往返一致性。平面图初始计数预期误写 13，逐项核对树后更正为 12。
 
 ## 一致性自查
 
@@ -45,10 +46,34 @@ infrastructure --> domain
 
 ## 质量保证手段
 
-当前 `npm test` 通过 12 个测试，约 1 秒（编译之外）：领域不变量、失败事务与历史屏障、35 步编辑的 undo-all/redo-all 回归、XML 特殊字符往返、自动 ID 冲突、真实磁盘覆盖和真实 CLI 子进程。测试按风险组织，相关边界使用表驱动，避免每个命令机械复制测试。最终还将加入课程流程图和额外两个验收案例，并预览生成文件。
+当前 `npm test` 通过 12 个测试，约 1 秒（编译之外）：领域不变量、失败事务与历史屏障、35 步编辑的 undo-all/redo-all 回归、XML 特殊字符往返、自动 ID 冲突、真实磁盘覆盖和真实 CLI 子进程。`npm run check` 额外重放四个验收案例，对照已预览的 SVG 基准。测试按风险组织，相关边界使用表驱动，避免每个命令机械复制测试。
 
 ## 目前的使用入口
 
 `npm ci` → `npm run build` → `npm run cli`。在 `svg>` 输入 `help` 查看全部语法，输入 `exit` 退出。也可运行 `npm run cli -- --script commands.svgcli`，失败即停止并返回非零退出码；调试时用 `--keep-going`。路径相对于运行时工作目录，包含空格的路径需双引号。
 
 支持 UTF-8 SVG 的 rect/circle/ellipse/line/text/g 及课程属性白名单；宽高为正数，viewBox 必须为 `0 0 width height`。导入缺省几何值为 0，缺省画布 800×600。暂不支持 transform、CSS style、path、tspan、百分比尺寸等外部编辑器特性，导入会明确拒绝。data-kind 容器降级为普通 g 并警告。最多 10,000 元素、64 层、5 MiB 输入；历史最多保留 100 条编辑。
+
+## Phase 1 逐条核对
+
+依据用户提供的 `phase_cli_1.md`（SHA256 `D8BBF9409A9596035F13AE809888C64E813EA76966B649911536DA44EABC7F76`）核对；文档中的 box 案例明确属于下一阶段，不能误当本阶段必需功能。截止日期未在该文件给出，因此本项目只能记录实际 tag 时间，不能证明早于未提供的截止时间。
+
+| 原文条目 | 实现与证据 |
+|---|---|
+| §1.1 分步 Git、远程推送、final | 分阶段提交及语义版本发布；完成正式版本时额外建立 final |
+| §1.2 架构、过程、自查、质量保证 | 本文件四个对应章节；PlantUML 包图见上方 |
+| §2 TypeScript、OO、一类一文件 | src 各类独立；几何逻辑封装在 Shape 类层次 |
+| §2 Command、Composite、仅两处分派 | application/commands；Group；CommandParser/ShapeFactory 注册表 |
+| §2 唯一 ID、自动 ID、引号、注释 | Document、SvgCodec、Tokenizer；domain/storage/cli 测试 |
+| §2 error 前缀、一行、失败不改状态 | Main 统一错误出口，SnapshotCommand 回滚；session 失败事务测试 |
+| §3 文档命令与历史屏障 | Init/Read/Save/CanvasCommand，session IO 屏障测试 |
+| §3 全部编辑与显示命令 | 独立 Command 类、HelpCommand 全表；真实 CLI 及四个案例 |
+| §4.1 六种类型及 set 白名单 | 六个 Shape 子类、ShapeFactory，domain 验证与往返测试 |
+| §4.1 in 创建归属 | CreateCommand → Document.add；flowchart 案例 |
+| §4.2 规定错误和根级不可解组 | domain/session 的边界测试；未知 box 按 unknown shape type 拒绝 |
+| §4.3 undo/redo 粒度与分支 | SnapshotCommand 与 EditorSession；35 步回归及分支测试 |
+| §4.4 后续 box 不属本阶段 | 不实现插件，不提前添加 box；data-kind 降级 g 并警告 |
+| §5 tree/show 格式 | TreeFormatter 输出分支线、内联属性与父容器；语义保持，属性排版不逐字符模仿样例 |
+| §6 流程图及外部导入 | 02-flowchart；storage 测试覆盖缺 ID 外部 SVG；另加看板和平面图 |
+
+使用方法见 [TUTORIAL.md](TUTORIAL.md)；语法见 [COMMANDS.md](COMMANDS.md)；发布维护见 [RELEASING.md](RELEASING.md)。保持首页导航与这四份职责明确的文档，不重复粘贴课程全文。

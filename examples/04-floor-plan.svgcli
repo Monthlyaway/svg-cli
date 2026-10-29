@@ -1,0 +1,24 @@
+# Extra acceptance: decimal coordinates, reparenting and recovery from deletion.
+init 600 400
+create rect paper 0 0 600 400 #ffffff
+create text title 30 40 "工作室平面图 / Studio"
+create g studio
+create rect room 30 70 540 300 #eef5ff in studio
+set room stroke #355c88
+set room stroke-width 3
+create g furniture in studio
+create rect desk 70.5 110 200 90 #e9c399 in furniture
+create text desk-label 100 160 "桌面 / Desk" in furniture
+create circle chair 170.5 250 30 #90b8df in furniture
+create ellipse plant 490 130 30 45 #64b879 in studio
+create line wall 360 70 360 300 #355c88 in studio
+set wall stroke-width 3
+create g details in studio
+addto details plant
+group workstation desk desk-label chair
+move workstation 20.5 10
+delete workstation
+undo
+set room fill #f5f8ff
+save floor-plan.svg
+tree

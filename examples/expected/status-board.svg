@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320" viewBox="0 0 640 320">
+  <rect id="background" fill="#f2f5fa" x="0" y="0" width="640" height="320"/>
+  <text id="heading" x="30" y="45">任务看板 / Build status</text>
+  <g id="board">
+    <g id="card">
+      <rect id="panel" fill="white" stroke="#ccd4df" x="30" y="80" width="580" height="190"/>
+      <line id="divider" stroke="#ccd4df" x1="55" y1="170" x2="585" y2="170"/>
+      <text id="note" x="55" y="210">SVG CLI: Windows portable</text>
+      <ellipse id="glow" fill="#d8f4e7" cx="86.10000000000001" cy="141.75" rx="24.150000000000002" ry="24.150000000000002"/>
+      <circle id="status" fill="#22a06b" cx="86.10000000000001" cy="141.75" r="14.700000000000001"/>
+      <text id="label" x="117.60000000000001" y="148.05">通过 / Ready</text>
+    </g>
+  </g>
+</svg>

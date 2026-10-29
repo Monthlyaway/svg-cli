@@ -1,0 +1,11 @@
+# First drawing: a rectangle, a label and a move you can undo.
+init 400 200
+create rect card 30 40 340 120 #e8f2ff
+set card stroke #3266a8
+set card stroke-width 2
+create text title 60 105 "Hello SVG"
+move title 10 0
+undo
+redo
+save first-drawing.svg
+tree
