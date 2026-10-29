@@ -1,0 +1,25 @@
+{
+  "name": "@monthlyaway/svg-cli",
+  "version": "0.1.0",
+  "description": "An object-oriented SVG command-line editor for Windows",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Chunyu Yang <wilsonyang315@gmail.com>",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "cli": "node dist/src/cli/Main.js",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "check": "npm test"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "0.9.12"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "typescript": "7.0.2"
+  }
+}
