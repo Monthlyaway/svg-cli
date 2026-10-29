@@ -28,7 +28,7 @@ export class Main {
       if (interactive) { console.log(`svg-editor ${version} — type 'help' for commands; exit to leave`); input.setPrompt('svg> '); input.prompt(); }
       for await (const line of input) { if (!execute(line)) { input.close(); break; } if (interactive) input.prompt(); }
     }
-    if (failed && !process.stdin.isTTY) process.exitCode = 1;
+    if (failed && (args.length > 0 || !process.stdin.isTTY)) process.exitCode = 1;
   }
 }
 new Main().run(process.argv.slice(2)).catch(error => { console.error(`error: ${String(error instanceof Error ? error.message : error).replace(/[\r\n]+/g, ' ')}`); process.exitCode = 1; });

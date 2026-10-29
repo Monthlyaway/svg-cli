@@ -16,7 +16,7 @@ export abstract class Shape {
     if (!['fill', 'stroke', 'stroke-width'].includes(attribute)) throw new Error(`unknown attribute: ${attribute}`);
     if (attribute === 'stroke-width') value = String(NumberValue.parse(value, attribute, 0));
     if (/[\x00-\x08\x0b\x0c\x0e-\x1f]/u.test(value)) throw new Error('invalid control character');
-    if (attribute !== 'stroke-width' && !/^(?:#[\da-f]{3,8}|[a-z]+|(?:rgb|rgba|hsl|hsla)\([\d\s.,%+-]+\))$/i.test(value)) {
+    if (attribute !== 'stroke-width' && !/^(?:#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})|[a-z]+|(?:rgb|rgba|hsl|hsla)\([\d\s.,%+-]+\))$/i.test(value)) {
       throw new Error(`unsupported paint: ${value}`);
     }
     this.style.set(attribute, value);

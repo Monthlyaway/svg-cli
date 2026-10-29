@@ -6,6 +6,6 @@ export class CreateCommand implements Command {
   constructor(private readonly type: string, private readonly id: string, private readonly args: readonly string[], private readonly parent?: string) {}
   execute(session: EditorSession): string {
     const shape = new ShapeFactory().create(this.type, this.id, this.args); session.document.add(shape, this.parent);
-    return `${shape.label} created${this.parent ? ` in g#${this.parent}` : ''}`;
+    return `${shape.label} created${this.parent !== undefined ? ` in g#${this.parent}` : ''}`;
   }
 }

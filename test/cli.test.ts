@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { Tokenizer } from '../src/cli/Tokenizer.js';
 
 const main = resolve('dist/src/cli/Main.js');
@@ -26,6 +27,9 @@ test('real script entry uses cwd, UTF-8, stop-on-error and nonzero exit status',
     writeFileSync(script,'init\ncreate rect bad 0 0 -1 2\ncreate g after\ntree\n');
     const bad = spawnSync(process.execPath,[main,'--script',script],{cwd:directory,encoding:'utf8'});
     assert.equal(bad.status,1); assert.match(bad.stderr,/^error: invalid width/m); assert.doesNotMatch(bad.stdout,/after/);
+    const ttyProgram = `Object.defineProperty(process.stdin,'isTTY',{value:true});process.argv=${JSON.stringify([process.execPath,main,'--script',script])};await import(${JSON.stringify(pathToFileURL(main).href)});`;
+    const tty = spawnSync(process.execPath,['--input-type=module','-e',ttyProgram],{cwd:directory,encoding:'utf8'});
+    assert.equal(tty.status,1,'Script errors must return nonzero even when launched from an interactive terminal');
     const keep = spawnSync(process.execPath,[main,'--script',script,'--keep-going'],{cwd:directory,encoding:'utf8'});
     assert.equal(keep.status,1); assert.match(keep.stdout,/g#after/);
     const piped = spawnSync(process.execPath,[main],{input:'init\ncreate g a\nexit\ncreate g skipped\n',encoding:'utf8'});

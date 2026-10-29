@@ -20,13 +20,22 @@ test('all failing edits leave document AND both history stacks unchanged', () =>
   const s = new EditorSession(new MemoryStorage()); run(s,'init'); run(s,'create g outer');
   run(s,'create rect a 1 2 3 4 in outer'); run(s,'create circle b 0 0 1 in outer'); run(s,'undo');
   const before = codec.encode(s.document);
-  for (const command of ['create rect a 0 0 1 1','create circle bad 0 0 1 in absent','create circle bad 0 0 1 in a','group bad outer a','ungroup outer','addto outer outer','set a width -2','set a id changed','scale a 0','move a NaN 1','create box n 0 0 1 1','create g ""']) {
+  for (const command of ['create rect a 0 0 1 1','create circle bad 0 0 1 in absent','create circle bad 0 0 1 in a','create g bad in ""','tree ""','group bad outer a','ungroup outer','addto outer outer','set a width -2','set a id changed','set a fill #12345','scale a 0','move a NaN 1','create box n 0 0 1 1','create g ""']) {
     assert.throws(() => run(s, command), command); assert.equal(codec.encode(s.document), before, command);
   }
   run(s,'redo'); assert.equal(s.document.require('b').tag, 'circle');
   run(s,'create circle huge 1e308 0 1 in outer'); const partial = codec.encode(s.document);
   assert.throws(() => run(s,'scale outer 10')); assert.equal(codec.encode(s.document), partial);
   run(s,'undo'); assert.equal(s.document.has('huge'), false);
+});
+test('history retention is bounded to 100 units and remains usable after reaching the cap', () => {
+  const s = new EditorSession(new MemoryStorage()); run(s,'init'); run(s,'create rect r 0 0 1 1');
+  for (let i=0; i<105; i++) run(s,'move r 1 0');
+  for (let i=0; i<100; i++) run(s,'undo');
+  assert.equal(s.document.require('r').attributes().get('x'),'5');
+  assert.throws(() => run(s,'undo'),/nothing to undo/);
+  for (let i=0; i<100; i++) run(s,'redo');
+  assert.equal(s.document.require('r').attributes().get('x'),'105');
 });
 test('successful IO resets history, failed IO preserves it, save remembers target', () => {
   const s = new EditorSession(new MemoryStorage()); run(s,'init 200'); assert.equal(s.document.height,600);

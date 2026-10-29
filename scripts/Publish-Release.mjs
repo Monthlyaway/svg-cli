@@ -35,7 +35,8 @@ try {
   for(const [filename,content,mime] of [[name,zip,'application/zip'],['SHA256SUMS.txt',checksums,'text/plain']]) {
     const existing = release.assets.find(a=>a.name===filename);
     if(existing) { if(existing.size!==content.length) throw new Error(`Existing draft asset mismatch: ${filename}`); continue; }
-    await request(`${release.upload_url.split('{')[0]}?name=${encodeURIComponent(filename)}`,{method:'POST',headers:{'Content-Type':mime},body:content});
+    console.log(`Uploading ${filename} (${content.length} bytes)...`);
+    await request(`${release.upload_url.split('{')[0]}?name=${encodeURIComponent(filename)}`,{method:'POST',headers:{'Content-Type':mime},body:content,signal:AbortSignal.timeout(15*60*1000)});
   }
   const ready = await request(`${base}/releases/${release.id}`);
   if(![name,'SHA256SUMS.txt'].every(n=>ready.assets.some(a=>a.name===n))) throw new Error('Draft is missing required assets');

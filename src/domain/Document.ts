@@ -40,7 +40,7 @@ export class Document {
   parentLabel(shape: Shape): string { const parent = this.parent(shape); return parent === this.root ? 'svg' : parent.label; }
   add(shape: Shape, containerId?: string): void {
     if (this.has(shape.id)) throw new Error(`id already exists: ${shape.id}`);
-    (containerId ? this.container(containerId) : this.root).insert(shape);
+    (containerId !== undefined ? this.container(containerId) : this.root).insert(shape);
     this.validate();
   }
   delete(id: string): void { const shape = this.require(id); this.parent(shape).remove(shape); }

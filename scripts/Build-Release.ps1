@@ -1,4 +1,4 @@
-param()
+﻿param()
 $ErrorActionPreference = 'Stop'
 function Get-Sha256([string]$LiteralPath) {
     $stream = [IO.File]::OpenRead($LiteralPath)

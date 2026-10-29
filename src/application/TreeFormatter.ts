@@ -7,7 +7,7 @@ export class TreeFormatter {
       lines.push(`${prefix}${last ? '└── ' : '├── '}${shape.summary()}`);
       shape.children.forEach((child, i, list) => visit(child, prefix + (last ? '    ' : '│   '), i === list.length - 1));
     };
-    if (id) {
+    if (id !== undefined) {
       const shape = document.require(id); lines.push(shape.summary());
       shape.children.forEach((child, i, list) => visit(child, '', i === list.length - 1));
     } else {
