@@ -1,0 +1,7 @@
+import type { Command } from '../Command.js';
+import type { EditorSession } from '../EditorSession.js';
+import { TreeFormatter } from '../TreeFormatter.js';
+export class ShowCommand implements Command {
+  readonly mode = 'display'; constructor(private readonly id: string) {}
+  execute(session: EditorSession): string { return new TreeFormatter().show(session.document, this.id); }
+}

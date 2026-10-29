@@ -10,6 +10,7 @@ export abstract class Shape {
   get label(): string { return `${this.tag}#${this.id}`; }
   get children(): readonly Shape[] { return []; }
   get content(): string { return ''; }
+  get acceptsText(): boolean { return false; }
   attributes(): ReadonlyMap<string, string> { return new Map([['id', this.id], ...this.style]); }
   set(attribute: string, value: string): void {
     if (!['fill', 'stroke', 'stroke-width'].includes(attribute)) throw new Error(`unknown attribute: ${attribute}`);
