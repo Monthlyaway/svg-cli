@@ -1,5 +1,11 @@
 param()
 $ErrorActionPreference = 'Stop'
+function Get-Sha256([string]$LiteralPath) {
+    $stream = [IO.File]::OpenRead($LiteralPath)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose(); $stream.Dispose() }
+}
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Push-Location $projectRoot
 try {
@@ -17,7 +23,7 @@ try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         Invoke-WebRequest -UseBasicParsing -Uri "https://nodejs.org/dist/v$nodeVersion/node-v$nodeVersion-win-x64.zip" -OutFile $archive
     }
-    if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $nodeSha256) { throw 'Node runtime SHA256 mismatch' }
+    if ((Get-Sha256 $archive) -ne $nodeSha256) { throw 'Node runtime SHA256 mismatch' }
     $releaseRoot = Join-Path $projectRoot 'release'
     $name = "svg-cli-$($package.version)-win-x64"
     $stage = Join-Path $releaseRoot ($name + '-' + [guid]::NewGuid().ToString('N'))
@@ -38,7 +44,7 @@ try {
     $target = Join-Path $releaseRoot "$name.zip"
     if (Test-Path -LiteralPath $target) { Remove-Item -LiteralPath $target }
     [IO.Compression.ZipFile]::CreateFromDirectory($stage, $target)
-    $checksum = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+    $checksum = Get-Sha256 $target
     [IO.File]::WriteAllText((Join-Path $releaseRoot 'SHA256SUMS.txt'), "$checksum  $name.zip`n", (New-Object Text.UTF8Encoding($false)))
     $resolvedStage = [IO.Path]::GetFullPath($stage)
     if (!$resolvedStage.StartsWith(([IO.Path]::GetFullPath($releaseRoot) + [IO.Path]::DirectorySeparatorChar), [StringComparison]::OrdinalIgnoreCase)) { throw 'Invalid staging path' }
