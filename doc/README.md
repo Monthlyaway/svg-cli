@@ -1,3 +1,5 @@
+在线文档：[https://github.com/Monthlyaway/svg-cli/blob/main/doc/README.md](https://github.com/Monthlyaway/svg-cli/blob/main/doc/README.md)
+
 # Lab1 Phase 1：SVG 编辑器（CLI）
 
 ## 架构方案
