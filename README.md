@@ -20,7 +20,7 @@ exit
 
 把生成的 `hello.svg` 拖到 Edge 或 Chrome 窗口，即可看到浅蓝色卡片和文字。发布包包含 Node.js 运行时，Windows 10/11 x64 无需安装 Node 或 npm。源码 ZIP 是开发者入口，不是免安装包。
 
-从概念、坐标、分组到撤销、导入和脚本的完整引导见 [小白教程](doc/TUTORIAL.md)。查语法见 [命令速查](doc/COMMANDS.md)，课程架构与逐条核对见 [工程说明](doc/README.md)。
+从概念、坐标、分组到撤销、导入和脚本的完整引导见 [小白教程](doc/TUTORIAL.md)。查语法见 [命令速查](doc/COMMANDS.md)，架构方案、过程记录、一致性自查和质量保证手段见 [课程文档](doc/README.md)。
 
 ![课程流程图](examples/expected/flowchart.svg)
 
